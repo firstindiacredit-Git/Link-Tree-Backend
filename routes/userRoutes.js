@@ -3,9 +3,11 @@ const router = express.Router();
 const User = require('../models/User');
 const auth = require('../middleware/auth');
 const { upload } = require('../config/cloudinary');
+const dbConnect = require('../lib/dbConnect');
 
 // Get user profile by username (public)
 router.get('/:username', async (req, res) => {
+  await dbConnect();
   try {
     const user = await User.findOne({ username: req.params.username })
       .select('-password -email');
@@ -18,6 +20,7 @@ router.get('/:username', async (req, res) => {
 
 // Get current user profile (protected)
 router.get('/me/profile', auth, async (req, res) => {
+  await dbConnect();
   try {
     const user = await User.findById(req.user._id).select('-password');
     res.json(user);
@@ -28,6 +31,7 @@ router.get('/me/profile', auth, async (req, res) => {
 
 // Upload avatar (protected)
 router.post('/upload-avatar', auth, upload.single('avatar'), async (req, res) => {
+  await dbConnect();
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'No file uploaded' });
@@ -47,6 +51,7 @@ router.post('/upload-avatar', auth, upload.single('avatar'), async (req, res) =>
 
 // Update user profile (protected)
 router.post('/update', auth, async (req, res) => {
+  await dbConnect();
   try {
     const updates = Object.keys(req.body);
     const allowedUpdates = ['bio', 'theme', 'links'];
@@ -69,6 +74,7 @@ router.post('/update', auth, async (req, res) => {
 
 // Delete user account (protected)
 router.delete('/me', auth, async (req, res) => {
+  await dbConnect();
   try {
     await req.user.remove();
     res.json({ message: 'User deleted successfully' });

@@ -2,9 +2,11 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const dbConnect = require('../lib/dbConnect');
 
 // Register new user
 router.post('/register', async (req, res) => {
+  await dbConnect();
   try {
     const { username, email, password } = req.body;
 
@@ -40,6 +42,7 @@ router.post('/register', async (req, res) => {
 
 // Login user
 router.post('/login', async (req, res) => {
+  await dbConnect();
   try {
     const { email, password } = req.body;
 
