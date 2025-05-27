@@ -16,7 +16,7 @@ app.use(cors({
 app.use(express.json());
 
 
-mongoose.connect(process.env.MONGODB_URI, {
+mongoose.connect(process.env.MONGO_URI, {
   serverSelectionTimeoutMS: 30000, // Timeout after 30 seconds
   socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
   connectTimeoutMS: 30000, // Connection attempt timeout
