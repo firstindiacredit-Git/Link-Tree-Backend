@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 const auth = require('../middleware/auth');
+const { upload } = require('../config/cloudinary');
 
 // Get user profile by username (public)
 router.get('/:username', async (req, res) => {
@@ -25,11 +26,30 @@ router.get('/me/profile', auth, async (req, res) => {
   }
 });
 
+// Upload avatar (protected)
+router.post('/upload-avatar', auth, upload.single('avatar'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+
+    req.user.avatar = req.file.path;
+    await req.user.save();
+    
+    res.json({ 
+      message: 'Avatar uploaded successfully',
+      avatar: req.file.path 
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Update user profile (protected)
 router.post('/update', auth, async (req, res) => {
   try {
     const updates = Object.keys(req.body);
-    const allowedUpdates = ['bio', 'avatar', 'theme', 'links'];
+    const allowedUpdates = ['bio', 'theme', 'links'];
     const isValidOperation = updates.every(update => allowedUpdates.includes(update));
 
     if (!isValidOperation) {

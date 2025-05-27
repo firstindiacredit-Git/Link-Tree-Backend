@@ -7,12 +7,23 @@ const app = express();
 
 // Middleware
 app.use(cors());
+app.use(cors({
+  origin: ['http://localhost:5173', 'https://link-tree-frontend-sooty.vercel.app'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
+
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error(err));
+
+app.get('/', (req, res) => {
+  res.send('welcome to linktree backend');
+});
 
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));
