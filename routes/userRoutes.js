@@ -83,4 +83,20 @@ router.delete('/me', auth, async (req, res) => {
   }
 });
 
+// Increment link clicks (public)
+router.post('/:username/links/:index/click', async (req, res) => {
+  await dbConnect();
+  try {
+    const { username, index } = req.params;
+    const user = await User.findOne({ username });
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    if (!user.links[index]) return res.status(404).json({ error: 'Link not found' });
+    user.links[index].clicks = (user.links[index].clicks || 0) + 1;
+    await user.save();
+    res.json({ clicks: user.links[index].clicks });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 module.exports = router;

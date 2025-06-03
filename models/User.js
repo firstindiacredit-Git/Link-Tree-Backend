@@ -4,7 +4,8 @@ const bcrypt = require('bcryptjs');
 const LinkSchema = new mongoose.Schema({
   title: { type: String, required: true },
   url: { type: String, required: true },
-  active: { type: Boolean, default: true }
+  active: { type: Boolean, default: true },
+  clicks: { type: Number, default: 0 }
 });
 
 const UserSchema = new mongoose.Schema({
